@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" , data-theme="forest">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>BongoRooster</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/daisyui@2.39.1/dist/full.css"
-      rel="stylesheet"
-      type="text/css"
+        href="https://cdn.jsdelivr.net/npm/daisyui@2.39.1/dist/full.css"
+        rel="stylesheet"
+        type="text/css"
     />
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="p-10">
+    <link
+        href="{{ url_for('static', filename='css/style.css') }}"
+        rel="stylesheet"
+        type="text/css"
+    />
+</head>
+<body class="p-10 ">
+<div class="container">
     {% block content %}{% endblock %}
-  </body>
+</div>
+</body>
 </html>

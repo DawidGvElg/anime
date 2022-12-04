@@ -65,10 +65,9 @@ def index():
     cur.execute('SELECT * FROM characters;')
     characters = cur.fetchall()
     cur.execute('SELECT * FROM randompic ORDER BY random ()')
-    randompic = cur.fetchone() 
-    q= request.args.get('q')
+    randompic = cur.fetchone()
 
-    return render_template("index.html", anime=anime, characters=characters, randompic=randompic)   
+    return render_template("index.html", anime=anime, characters=characters, randompic=randompic)
 
 @app.route("/anime/<string:anime_id>", methods=('GET', 'POST'))
 

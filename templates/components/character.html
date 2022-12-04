@@ -1,12 +1,9 @@
-<div class="flex">
-  {%for i in characters%}
-  <div class="card card-compact w-60 bg-info-content shadow-x1 m-8">
+<div class="card card-compact w-60 bg-info-content shadow-x1 m-8">
     <figure>
-      <img src="{{i[2]}}" alt="anime" width="400" />
+        <img src="{{i[2]}}" alt="anime" width="400"/>
     </figure>
     <div class="card-body">
-      <h2 class="card-title">{{ i[1] }}</h2>
+        <h2 class="card-title">{{ i[1] }}</h2>
     </div>
-  </div>
-  {% endfor %}
 </div>
+
