@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+<div class="navbar bg-base-100" method="GET">
+  <div class="flex-1">
+    <a class="btn btn-ghost normal-case text-xl">Anime From Doungus</a>
+  </div>
+  <a href="{{url_for('createanime') }}" class="btn btn-primary m-8 gap-2" target="_blank"
+  >createanime</a>
+  <div class="flex-none gap-2">
+    <form method="GET" action="{{url_for('animewa', anime_id=anime[0])}}">
+      <input
+        type="text"
+        placeholder="Search"
+        class="input input-bordered"
+        name="animewa"
+        value=""
+        required
+      />
+    </form>
+  </div>
+</div>
+<div class="container m-8">
+  <img
+    class="my-8"
+    width="400"
+    src="{{url_for('static', filename='goose.jpg')}}"
+    alt="Trust me, Bro. Its a weeb pik "
+  />
+  <hr />
+</div>
+<div class="container">{%include 'components/card.html'%}</div>
+<a href="{{url_for('testlink') }}" class="btn btn-primary mt-6" target="_blank"
+  >Story</a
+>&copy;&rarr; BongoRooster<br />
+
+<div class="media_content rand_tech_widget">
+  <div class="b-g-title">Случайная <span>техника</span></div>
+  <div id="laststoryhere" style="height: 132px">
+    <figure>
+      <img src="{{randompic[1]}}" alt="anime" width="400" />
+    </figure>
+      <span>{{randompic[2]}}</span>
+    </a>
+  </div>
+</div> 
+ {% endblock %}

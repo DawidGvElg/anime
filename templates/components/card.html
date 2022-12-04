@@ -1,0 +1,22 @@
+<div class="flex">
+  {%for anime in anime%}
+  <div class="card card-compact w-96 bg-info-content shadow-x1 m-8">
+    <figure>
+      <img src="{{anime[1]}}" alt="anime" width="400" />
+    </figure>
+    <div class="card-body">
+      <h2 class="card-title">{{ anime[0] }} Status {{ anime[4] }}</h2>
+      <h3>Автор: {{anime[2]}}</h3>
+      <p>{{anime [3]}}</p>
+      <div class="card-actions justify-end">
+        <a
+          href="{{url_for('animewa', anime_id=anime[5])}}"
+          class="btn btn-base-100 m-8"
+          target="_blank"
+          >Watch Online</a
+        >
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
