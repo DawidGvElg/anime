@@ -58,9 +58,16 @@ connection.autocommit = True
 @app.route("/", methods=['GET'])
 @app.route("/anime", methods=['GET'])
 def index():
+    query = request.args
+    search=''
+    if 'search' in query:
+        search = query['search']
     conn = connection
     cur = conn.cursor()
-    cur.execute('SELECT * FROM anime1;')
+    if search != "":
+        cur.execute('SELECT * FROM anime1 WHERE title LIKE \'{}%\''.format(search))
+    else:
+         cur.execute('SELECT * FROM anime1;')
     anime = cur.fetchall()
     cur.execute('SELECT * FROM characters;')
     characters = cur.fetchall()
