@@ -65,7 +65,7 @@ def index():
     conn = connection
     cur = conn.cursor()
     if search != "":
-        cur.execute('SELECT * FROM anime1 WHERE title LIKE \'{}%\''.format(search))
+        cur.execute('SELECT * FROM anime1 WHERE title ILIKE \'{}%\''.format(search))
     else:
          cur.execute('SELECT * FROM anime1;')
     anime = cur.fetchall()
