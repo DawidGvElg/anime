@@ -50,18 +50,25 @@
             <button type="submit" class="btn btn-primary m-8">Submit</button>
         </div>
     </form>
-    <div>
-        <div class="mb-2">
-            {{ review|length }} comments
-        </div>
-        <div class="border border-t-white pt-4 border-transparent space-y-8 pl-2">
-        {% for review in review %}
-            <div class="card-white">
-                <p class="font-bold mb-1 text-lg">{{review[1]}}</p>
-                <p>{{review[2]}}</p>
-            </div>
-        {% endfor %}
+    <div class="ml-9">
+        {{ review|length }} comments
     </div>
+    <div class="flex">
+        <label tabindex="0" class="btn btn-ghost btn-circle avatar mt-2">
+            <div class="w-10 rounded-full">
+            <img src="https://placeimg.com/80/80/people" />
+            </div>
+        </label>
+        <div>
+            <div class="border border-t-white pt-4 border-transparent space-y-8 pl-2">
+            {% for review in review %}
+                <div class="card-white">
+                    <p class="font-bold mb-1 text-lg">{{review[1]}}</p>
+                    <p>{{review[2]}}</p>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
