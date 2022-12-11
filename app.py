@@ -1,5 +1,7 @@
 from flask import Flask, render_template, url_for, request, flash, redirect
+import urllib.request
 import os
+from werkzeug.utils import secure_filename
 import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
@@ -14,46 +16,14 @@ url = os.getenv("DATABASE_URL")
 connection = psycopg2.connect(url)
 connection.autocommit = True
 
+UPLOAD_FOLDER = 'static/uploads/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+  
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+  
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# @app.route("/")
-# def index():
-#     conn = connection
-#     cur = conn.cursor()
-#     cur.execute('CREATE TABLE IF NOT EXISTS anime1 (id_anime int PRIMARY KEY,'
-#                                  'title varchar (150) NOT NULL,'
-#                                  'image bytea,'
-#                                  'author varchar (50) NOT NULL,'
-#                                  'decription varchar(200) NOT NULL,'
-#                                  'rating integer NOT NULL,'
-#                                  'status varchar (10) NOT NULL,'
-#                                  'review text );'
-#                                  )
-    # cur.execute('CREATE TABLE IF NOT EXISTS characters (id_char int NOT NULL,'
-    #                              'name varchar (150) NOT NULL );'
-    #                              )
-    # cur.execute('CREATE TABLE IF NOT EXISTS images (id_image int PRIMARY KEY,'
-    #                              'image bytea );'
-    #                              )                             
-    # cur.execute("""INSERT INTO anime1 (id_anime, title, image, author, decription, rating, status, review) VALUES
-    #             (1, 'Naruto',bytea('naruto.jpg'), 'Масаси Кисимото','Бездомный пацан хочет стать президентом', 9, 'Закончен','10 флэшбеков из 10'  ),
-    #             (2, 'One Piece',bytea('onepiece.jpg'), 'Эйитиро Ода','Поехавшая резина с отбитыми ищет один кусок', 10, 'Ongoing','Я не доживу до конца аниме'  ),
-    #             (3, 'One Punch Man',bytea('opm.jpg'), 'ONE','Лысый мужик ищет смысл жизни', 8, 'Ongoing','Не ну рука у него конечно рабочая'  );""")
-    
-    # cur.execute("""INSERT INTO characters (id_char, name) VALUES
-    #             (1, 'Naruto'),
-    #             (1, 'Saske'),
-    #             (1, 'Sakura'),
-    #             (2, 'Monky D Luffy'),
-    #             (2, 'Roronora Zorro'),
-    #             (2, 'Chopper'),
-    #             (2, 'Nami'),
-    #             (3, 'Лысый'),
-    #             (3, 'Genos');""")
-
-    # cur.execute("""INSERT INTO images (id_image, image) VALUES
-    #             (1, bytea('naruto.jpg')),
-    #             (2, bytea('onepiece.jpg')),
-    #             (3, bytea('opm.jpg'));""")
 
 @app.route("/", methods=['GET'])
 @app.route("/anime", methods=['GET'])
@@ -102,8 +72,6 @@ def animewa(anime_id):
     return render_template("animewa.html", review=review, anime=anime, characters=characters, anime_id=anime_id)
 
 
-
-
 @app.route("/anime/create-anime", methods=('GET', 'POST'))
 def createanime():
     conn = connection
@@ -114,26 +82,63 @@ def createanime():
         author = request.form['author']
         description = request.form['description']
         status = request.form['status']
+        filename = request.form['image_sourse']
         if not title:
             flash('title is required!')
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No image selected for uploading')
         else:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             conn = connection
-            cur.execute('INSERT INTO anime1 (title, image, author, description, status) VALUES (%s, %s, %s, %s, %s)',
-                         (title, image, author, description, status ))
+            cur.execute('INSERT INTO anime1 (title, image, author, description, status, image_source) VALUES (%s, %s, %s, %s, %s, %s)',
+                         (title, image, author, description, status, filename ))
             conn.commit()
 
-    cur.execute('SELECT * FROM anime1')
+    cur.execute('SELECT * FROM anime1')     
     anime = cur.fetchall()
     cur.close()
     return render_template("createanime.html", anime=anime)
+
+@app.route("/anime/login")
+def sign_in():
+    return render_template("sign_in.html")
+
+
+@app.route("/anime/register", methods=('GET', 'POST'))
+def sign_up():
+    conn = connection
+    cur = conn.cursor()
+    if request.method == 'POST':
+        user_nick = request.form['user_nick']
+        mail = request.form['mail']
+        password = request.form['password']
+        if not user_nick or mail or password:
+            flash('You are missing something!')
+        else:
+            conn = connection
+            cur.execute('INSERT INTO users (user_nick, mail, password) VALUES (%s, %s, crypt(%s, gen_salt(\'bf\', 8))',
+                         (user_nick, mail, password))
+            conn.commit()
+    cur.execute('SELECT * FROM users')
+    users = cur.fetchone()
+    cur.close()
+    return render_template("sign_up.html", users=users)
+
 
 @app.route("/anime/story")
 def testlink():
     return render_template("bibka.html")
     
+
 @app.errorhandler(404)
 def pageNotFOund(error):
     return render_template("page404.html")
+    
 # with app.test_request_context():
 #     print( url_for ('index') )
 

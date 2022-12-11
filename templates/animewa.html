@@ -1,74 +1,79 @@
-{% extends "base.html" %}
-{% block content %}
-{% for anime in anime %}
+{% extends "base.html" %} {% block content %} {% for anime in anime %}
 <div class="container m-8">
-    <h1 class="text-3xl">{{anime[0]}} </h1>
-    <img
-            class="my-8"
-            width="400"
-            src="{{anime[1]}}"
-            alt="Trust me, Bro. "
+  <h1 class="text-3xl">{{anime[0]}}</h1>
+  <img class="my-8" width="400" src="{{anime[1]}}" alt="Trust me, Bro. " />
+  <br />
+  <div class="rating gap-1">
+    <input type="radio" name="rating-3" class="mask mask-heart bg-red-400" />
+    <input
+      type="radio"
+      name="rating-3"
+      class="mask mask-heart bg-orange-400"
+      checked
     />
-    <br>
-    <div class="rating gap-1">
-        <input type="radio" name="rating-3" class="mask mask-heart bg-red-400"/>
-        <input type="radio" name="rating-3" class="mask mask-heart bg-orange-400" checked/>
-        <input type="radio" name="rating-3" class="mask mask-heart bg-yellow-400"/>
-        <input type="radio" name="rating-3" class="mask mask-heart bg-lime-400"/>
-        <input type="radio" name="rating-3" class="mask mask-heart bg-green-400"/>
-    </div>
-    <h3 class="text-2xl">Автор: {{anime[2]}} </h3>
-    <h3 class="text-2xl">Рейтинг: 10/10 </h3>
-    <h3 class="text-2xl">Статус: {{anime[4]}} </h3>
-    <h3 class="text-2xl">Описание: {{anime[3]}} </h3>
-    <br>
-    {% endfor %}
-    <div class="container">
-        <div class="flex">
-            {% for i in characters %}
-            {%include 'components/character.html'%}
-            {% endfor %}
-        </div>
-    </div>
-    <form method="post">
-        <div class="form-control w-full max-w-xs">
-            <label class="label">
-                <span class="label-text">What is your name?</span>
-            </label>
-            <input type="text" name="name"
-                   placeholder="SAY YOUR NAME" class="input input-bordered w-full max-w-xs"
-                   value="{{ request.form['name'] }}">
-        </div>
-        <div class="form-control w-full max-w-xs">
-            <label class="label">
-                <span class="label-text">Write your thoughts</span>
-            </label>
-            <textarea name="content" placeholder="Post content"
-                      class="textarea textarea-primary">{{ request.form['content'] }}</textarea>
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary m-8">Submit</button>
-        </div>
-    </form>
-    <div class="ml-9">
-        {{ review|length }} comments
-    </div>
+    <input type="radio" name="rating-3" class="mask mask-heart bg-yellow-400" />
+    <input type="radio" name="rating-3" class="mask mask-heart bg-lime-400" />
+    <input type="radio" name="rating-3" class="mask mask-heart bg-green-400" />
+  </div>
+  <h3 class="text-2xl">Автор: {{anime[2]}}</h3>
+  <h3 class="text-2xl">Рейтинг: 10/10</h3>
+  <h3 class="text-2xl">Статус: {{anime[4]}}</h3>
+  <h3 class="text-2xl">Описание: {{anime[3]}}</h3>
+  <br />
+  {% endfor %}
+  <div class="container">
     <div class="flex">
-        <label tabindex="0" class="btn btn-ghost btn-circle avatar mt-2">
-            <div class="w-10 rounded-full">
-            <img src="https://placeimg.com/80/80/people" />
-            </div>
-        </label>
-        <div>
-            <div class="border border-t-white pt-4 border-transparent space-y-8 pl-2">
-            {% for review in review %}
-                <div class="card-white">
-                    <p class="font-bold mb-1 text-lg">{{review[1]}}</p>
-                    <p>{{review[2]}}</p>
-                </div>
-            {% endfor %}
-            </div>
-        </div>
+      {% for i in characters %} {%include 'components/character.html'%} {%
+      endfor %}
     </div>
+  </div>
+  <form method="post">
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">What is your name?</span>
+      </label>
+      <input
+        type="text"
+        name="name"
+        placeholder="SAY YOUR NAME"
+        class="input input-bordered w-full max-w-xs"
+        value="{{ request.form['name'] }}"
+      />
+    </div>
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Write your thoughts</span>
+      </label>
+      <textarea
+        name="content"
+        placeholder="Post content"
+        class="textarea textarea-primary"
+      >
+        {{ request.form['content'] }}
+        </textarea
+      >
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary m-8">Submit</button>
+    </div>
+  </form>
+  <div class="ml-9">{{ review|length }} comments</div>
+  <div class="flex">
+    <label tabindex="0" class="btn btn-ghost btn-circle avatar mt-2">
+      <div class="w-10 rounded-full">
+        <img src="https://placeimg.com/80/80/people" />
+      </div>
+    </label>
+    <div>
+      <div class="border border-t-white pt-4 border-transparent space-y-8 pl-2">
+        {% for review in review %}
+        <div class="card-white">
+          <p class="font-bold mb-1 text-lg">{{review[1]}}</p>
+          <p>{{review[2]}}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

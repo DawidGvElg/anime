@@ -3,7 +3,7 @@
     <div class="w-full h-[250px] relative overflow-hidden">
       <img
         class="absolute w-full min-h-full top-0 left-0"
-        src="{{anime[1]}}"
+        src="{{anime[1] if anime[1] != NULL else url_for('uploads', filename)}}"
         alt="anime"
       />
     </div>
