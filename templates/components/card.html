@@ -1,11 +1,19 @@
 <div class="w-4/12 px-4 mt-8 grow">
   <div class="card card-compact bg-info-content h-full overflow-hidden">
     <div class="w-full h-[250px] relative overflow-hidden">
+      {%if anime[1] != ""%}
       <img
         class="absolute w-full min-h-full top-0 left-0"
-        src="{{anime[1] if anime[1] != NULL else url_for('uploads', filename)}}"
+        src="{{anime[1]}}"
         alt="anime"
       />
+      {%else%}
+      <img
+        class="absolute w-full min-h-full top-0 left-0"
+        src="{{url_for('static', filename= 'uploads/' + anime[6])}}"
+        alt="anime"
+      />
+      {%endif%}
     </div>
     <!--        <img-->
     <!--            class="w-full h-[250px] object-cover"-->

@@ -1,7 +1,16 @@
 {% extends "base.html" %} {% block content %} {% for anime in anime %}
 <div class="container m-8">
   <h1 class="text-3xl">{{anime[0]}}</h1>
-  <img class="my-8" width="400" src="{{anime[1]}}" alt="Trust me, Bro. " />
+  {%if anime[1] != ""%}
+  <img class="my-8" width="400" src="{{anime[1]}}" alt="anime" />
+  {%else%}
+  <img
+    class="my-8"
+    width="400"
+    src="{{url_for('static', filename= 'uploads/' + anime[6])}}"
+    alt="anime"
+  />
+  {%endif%}
   <br />
   <div class="rating gap-1">
     <input type="radio" name="rating-3" class="mask mask-heart bg-red-400" />

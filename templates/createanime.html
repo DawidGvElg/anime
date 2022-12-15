@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-<form method="post" action="/anime/create-anime">
+<form method="post" action="/anime/create-anime" enctype="multipart/form-data">
   <div class="form-control w-full max-w-xs">
     <label class="label">
       <span class="label-text">Как называется аниме</span>
@@ -28,17 +28,13 @@
   <br />
   <h3>или вы можете вставить свое изображение</h3>
   <br />
-  <dl>
-    <p>
-      <input
-        type="file"
-        name="filename"
-        class="form-control"
-        autocomplete="off"
-        required
-      />
-    </p>
-  </dl>
+  <input
+    type="file"
+    name="image_sourse"
+    class="file-input file-input-bordered file-input-primary w-full max-w-xs"
+    autocomplete="off"
+    required
+  />
   <div class="form-control w-full max-w-xs">
     <label class="label">
       <span class="label-text">Автор аниме</span>

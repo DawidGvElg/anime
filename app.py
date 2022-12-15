@@ -82,20 +82,20 @@ def createanime():
         author = request.form['author']
         description = request.form['description']
         status = request.form['status']
-        filename = request.form['image_sourse']
+        file= request.files['image_sourse']
+        filename= file.filename
         if not title:
             flash('title is required!')
-        if 'file' not in request.files:
+        if 'image_sourse' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        file = request.files['file']
         if file.filename == '':
             flash('No image selected for uploading')
         else:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             conn = connection
-            cur.execute('INSERT INTO anime1 (title, image, author, description, status, image_source) VALUES (%s, %s, %s, %s, %s, %s)',
+            cur.execute('INSERT INTO anime1 (title, image, author, description, status, image_sourse) VALUES (%s, %s, %s, %s, %s, %s)',
                          (title, image, author, description, status, filename ))
             conn.commit()
 
@@ -118,7 +118,7 @@ def sign_up():
         mail = request.form['mail']
         password = request.form['password']
         if not user_nick or mail or password:
-            flash('You are missing something!')
+            flash('You are missing something!')      
         else:
             conn = connection
             cur.execute('INSERT INTO users (user_nick, mail, password) VALUES (%s, %s, crypt(%s, gen_salt(\'bf\', 8))',
