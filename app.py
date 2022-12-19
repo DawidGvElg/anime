@@ -1,17 +1,21 @@
-from flask import Flask, render_template, url_for, request, flash, redirect
+from flask import Flask, session, render_template, url_for, request, flash, redirect
 import urllib.request
 import os
+from flask_login import login_manager
 from werkzeug.utils import secure_filename
 import psycopg2
 import psycopg2.extras
+import re 
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import random
+
 
 load_dotenv()
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your secret key'
+app.config['SECRET_KEY'] = 'Super545sEcr8гetKet5v4v8zx8xc89asdxc'
 url = os.getenv("DATABASE_URL")
 connection = psycopg2.connect(url)
 connection.autocommit = True
@@ -23,6 +27,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
   
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 
 @app.route("/", methods=['GET'])
@@ -82,6 +87,8 @@ def createanime():
         author = request.form['author']
         description = request.form['description']
         status = request.form['status']
+        genre_id = request.form['genre_id']
+        anime_id =request.form['anime_id']
         file= request.files['image_sourse']
         filename= file.filename
         if not title:
@@ -97,16 +104,34 @@ def createanime():
             conn = connection
             cur.execute('INSERT INTO anime1 (title, image, author, description, status, image_sourse) VALUES (%s, %s, %s, %s, %s, %s)',
                          (title, image, author, description, status, filename ))
+            cur.execute('INSERT INTO genre_anime (genre_id, anime_id) VALUES (%s,%s)',
+                        (anime_id, genre_id))             
             conn.commit()
-
-    cur.execute('SELECT * FROM anime1')     
+    
+    cur.execute('SELECT * FROM anime1 INNER JOIN genre_anime ON genre_anime.anime_id = anime1.anime_id INNER JOIN genres ON genre_anime.genre_id = genres.genre_id')     
     anime = cur.fetchall()
     cur.close()
     return render_template("createanime.html", anime=anime)
 
-@app.route("/anime/login")
-def sign_in():
-    return render_template("sign_in.html")
+# @app.route('/login', methods =['GET', 'POST'])
+# def login():
+#     conn = connection
+#     cur = conn.cursor()
+#     if request.method == 'POST' and 'user_nick' in request.form and 'password' in request.form:
+#         user_nick = request.form['user_nick']
+#         password = request.form['password']
+#         cur.execute('SELECT * FROM users WHERE user_nick = %s AND password = crypt(%s, password)',
+#                     (user_nick, password))
+#         account = cur.fetchone()
+#         session['loggedin'] = True
+#         session['id'] = account['id']
+#         session['user_nick'] = account['user_nick']
+#         cur.close()
+#         return redirect(url_for('index'),account=account)
+#     else:
+#         flash('Incorrect username/password')
+#     return render_template('sign_in.html')    
+
 
 
 @app.route("/anime/register", methods=('GET', 'POST'))
@@ -117,18 +142,38 @@ def sign_up():
         user_nick = request.form['user_nick']
         mail = request.form['mail']
         password = request.form['password']
-        if not user_nick or mail or password:
-            flash('You are missing something!')      
+        if not user_nick or not mail or not password:
+            flash('You are missing something!') 
+            return render_template("sign_up.html")     
         else:
             conn = connection
-            cur.execute('INSERT INTO users (user_nick, mail, password) VALUES (%s, %s, crypt(%s, gen_salt(\'bf\', 8))',
+            cur.execute('INSERT INTO users (user_nick, mail, password) VALUES (%s, %s, crypt(%s, gen_salt(\'bf\', 8)))',
                          (user_nick, mail, password))
-            conn.commit()
+            conn.commit()  
     cur.execute('SELECT * FROM users')
     users = cur.fetchone()
     cur.close()
-    return render_template("sign_up.html", users=users)
+    return render_template('sign_up.html', users=users)
 
+
+# @app.route('/logout')
+# def logout():
+#     # Remove session data, this will log the user out
+#    session.pop('loggedin', None)
+#    session.pop('id', None)
+#    session.pop('user_nick', None)
+#    # Redirect to login page
+#    return redirect(url_for('login'))
+
+# @app.route('/profile')
+# def profile(): 
+#     conn = connection
+#     cur = conn.cursor()
+#     if 'loggedin' in session:
+#         cur.execute('SELECT * FROM users WHERE id = %s', [session['id']])
+#         account = cur.fetchone()
+#         return render_template('profile.html', account=account)
+#     return redirect(url_for('login'))
 
 @app.route("/anime/story")
 def testlink():
