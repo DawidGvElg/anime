@@ -15,7 +15,9 @@
   <br />
   <select class="select select-primary w-full max-w-xs">
     <option disabled selected>What is the genre</option>
-    <option>{{anime[8]}}</option>
+    {% for i in genre%}
+    <option>{{i[1]}}</option>
+    {%endfor%}
   </select>
   <br />
   <div class="form-control w-full max-w-xs">

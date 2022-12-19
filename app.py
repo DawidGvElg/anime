@@ -110,8 +110,10 @@ def createanime():
     
     cur.execute('SELECT * FROM anime1 INNER JOIN genre_anime ON genre_anime.anime_id = anime1.anime_id INNER JOIN genres ON genre_anime.genre_id = genres.genre_id')     
     anime = cur.fetchall()
+    cur.execute('SELECT * FROM genres')
+    genre = cur.fetchall()
     cur.close()
-    return render_template("createanime.html", anime=anime)
+    return render_template("createanime.html", anime=anime, genre=genre)
 
 # @app.route('/login', methods =['GET', 'POST'])
 # def login():
