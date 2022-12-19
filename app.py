@@ -28,11 +28,22 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_logged_user():
+    conn= connection
+    cur = conn.cursor()
+    if "user" in session:
+        id = session['user'][0]
+        cur.execute('SELECT * FROM users WHERE id_users= %s', str(id))
+        user = cur.fetchone()
+        return user
+    return None
 
 
 @app.route("/", methods=['GET'])
 @app.route("/anime", methods=['GET'])
 def index():
+    get_logged_user()
+    user= get_logged_user()
     query = request.args
     search=''
     if 'search' in query:
@@ -48,8 +59,9 @@ def index():
     characters = cur.fetchall()
     cur.execute('SELECT * FROM randompic ORDER BY random ()')
     randompic = cur.fetchone()
-
-    return render_template("index.html", anime=anime, characters=characters, randompic=randompic)
+    cur.execute('SELECT user_nick FROM users;')
+    user = cur.fetchone()
+    return render_template("index.html", anime=anime, characters=characters, randompic=randompic, user=user)
 
 @app.route("/anime/<string:anime_id>", methods=('GET', 'POST'))
 
@@ -104,6 +116,7 @@ def createanime():
             conn = connection
             cur.execute('INSERT INTO anime1 (title, image, author, description, status, image_sourse) VALUES (%s, %s, %s, %s, %s, %s)',
                          (title, image, author, description, status, filename ))
+            cur.execute('SELECT * FROM anime1 WHERE title= tile')
             cur.execute('INSERT INTO genre_anime (genre_id, anime_id) VALUES (%s,%s)',
                         (anime_id, genre_id))             
             conn.commit()
@@ -115,24 +128,23 @@ def createanime():
     cur.close()
     return render_template("createanime.html", anime=anime, genre=genre)
 
-# @app.route('/login', methods =['GET', 'POST'])
-# def login():
-#     conn = connection
-#     cur = conn.cursor()
-#     if request.method == 'POST' and 'user_nick' in request.form and 'password' in request.form:
-#         user_nick = request.form['user_nick']
-#         password = request.form['password']
-#         cur.execute('SELECT * FROM users WHERE user_nick = %s AND password = crypt(%s, password)',
-#                     (user_nick, password))
-#         account = cur.fetchone()
-#         session['loggedin'] = True
-#         session['id'] = account['id']
-#         session['user_nick'] = account['user_nick']
-#         cur.close()
-#         return redirect(url_for('index'),account=account)
-#     else:
-#         flash('Incorrect username/password')
-#     return render_template('sign_in.html')    
+@app.route('/login', methods =['GET', 'POST'])
+def login():
+    conn = connection
+    cur = conn.cursor()
+    if request.method == 'POST' and 'user_nick' in request.form and 'password' in request.form:
+        user_nick = request.form['user_nick']
+        password = request.form['password']
+        cur.execute('SELECT * FROM users WHERE user_nick = %s AND password = crypt(%s, password)',
+                    (user_nick, password))
+        account = cur.fetchone()
+        session['loggedin'] = True
+        session['user'] = account
+        cur.close()
+        return redirect(url_for('index'))
+    else:
+        flash('Incorrect username/password')
+    return render_template('sign_in.html')    
 
 
 
@@ -158,24 +170,23 @@ def sign_up():
     return render_template('sign_up.html', users=users)
 
 
-# @app.route('/logout')
-# def logout():
-#     # Remove session data, this will log the user out
-#    session.pop('loggedin', None)
-#    session.pop('id', None)
-#    session.pop('user_nick', None)
-#    # Redirect to login page
-#    return redirect(url_for('login'))
+@app.route('/logout')
+def logout():
+    # Remove session data, this will log the user out
+   session.pop('loggedin')
+   session.pop('user')
+   # Redirect to login page
+   return redirect(url_for('login'))
 
-# @app.route('/profile')
-# def profile(): 
-#     conn = connection
-#     cur = conn.cursor()
-#     if 'loggedin' in session:
-#         cur.execute('SELECT * FROM users WHERE id = %s', [session['id']])
-#         account = cur.fetchone()
-#         return render_template('profile.html', account=account)
-#     return redirect(url_for('login'))
+@app.route('/profile')
+def profile(): 
+    conn = connection
+    cur = conn.cursor()
+    if 'loggedin' in session:
+        cur.execute('SELECT * FROM users WHERE id = %s', [session['id']])
+        account = cur.fetchone()
+        return render_template('profile.html', account=account)
+    return redirect(url_for('login'))
 
 @app.route("/anime/story")
 def testlink():
