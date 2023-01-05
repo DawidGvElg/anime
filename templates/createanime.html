@@ -12,14 +12,14 @@
       value="{{ request.form['title'] }}"
     />
   </div>
-  <br />
-  <select class="select select-primary w-full max-w-xs">
-    <option disabled selected>What is the genre</option>
-    {% for i in genre%}
-    <option>{{i[1]}}</option>
-    {%endfor%}
-  </select>
-  <br />
+  <!-- <br />
+    <select class="select select-primary w-full max-w-xs" name="genre_id">
+      <option disabled selected>What is the genre</option>
+      {% for i in genre%}
+      <option>{{i[1]}}</option>
+      {%endfor%}
+    </select>
+  <br /> -->
   <div class="form-control w-full max-w-xs">
     <label class="label">
       <span class="label-text">Вставьте ссылку на картинку аниме</span>
@@ -40,7 +40,6 @@
     name="image_sourse"
     class="file-input file-input-bordered file-input-primary w-full max-w-xs"
     autocomplete="off"
-    required
   />
   <div class="form-control w-full max-w-xs">
     <label class="label">

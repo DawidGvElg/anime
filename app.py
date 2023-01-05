@@ -42,7 +42,6 @@ def get_logged_user():
 @app.route("/", methods=['GET'])
 @app.route("/anime", methods=['GET'])
 def index():
-    get_logged_user()
     user= get_logged_user()
     query = request.args
     search=''
@@ -59,8 +58,6 @@ def index():
     characters = cur.fetchall()
     cur.execute('SELECT * FROM randompic ORDER BY random ()')
     randompic = cur.fetchone()
-    cur.execute('SELECT user_nick FROM users;')
-    user = cur.fetchone()
     return render_template("index.html", anime=anime, characters=characters, randompic=randompic, user=user)
 
 @app.route("/anime/<string:anime_id>", methods=('GET', 'POST'))
@@ -99,36 +96,32 @@ def createanime():
         author = request.form['author']
         description = request.form['description']
         status = request.form['status']
-        genre_id = request.form['genre_id']
-        anime_id =request.form['anime_id']
         file= request.files['image_sourse']
         filename= file.filename
         if not title:
             flash('title is required!')
-        if 'image_sourse' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        if file.filename == '':
-            flash('No image selected for uploading')
-        else:
+        if 'image_sourse' in request.files:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             conn = connection
             cur.execute('INSERT INTO anime1 (title, image, author, description, status, image_sourse) VALUES (%s, %s, %s, %s, %s, %s)',
                          (title, image, author, description, status, filename ))
-            cur.execute('SELECT * FROM anime1 WHERE title= tile')
-            cur.execute('INSERT INTO genre_anime (genre_id, anime_id) VALUES (%s,%s)',
-                        (anime_id, genre_id))             
+            cur.execute('SELECT * FROM anime1 WHERE title = title INNER JOIN genres ON genres.anime_id= anime1.anime_id')            
+            conn.commit()
+        else:
+            conn = connection
+            cur.execute('INSERT INTO anime1 (title, image, author, description, status) VALUES (%s, %s, %s, %s, %s)',
+                         (title, image, author, description, status ))
+            cur.execute('SELECT * FROM anime1 INNER JOIN genres ON genres.anime_id= anime1.anime_id')            
             conn.commit()
     
-    cur.execute('SELECT * FROM anime1 INNER JOIN genre_anime ON genre_anime.anime_id = anime1.anime_id INNER JOIN genres ON genre_anime.genre_id = genres.genre_id')     
+    cur.execute('SELECT * FROM anime1')     
     anime = cur.fetchall()
     cur.execute('SELECT * FROM genres')
     genre = cur.fetchall()
     cur.close()
-    return render_template("createanime.html", anime=anime, genre=genre)
+    return render_template("createanime.html", anime=anime)
 
-@app.route('/login', methods =['GET', 'POST'])
 def login():
     conn = connection
     cur = conn.cursor()
